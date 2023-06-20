@@ -23,8 +23,8 @@ namespace AwarenessTelegramBot
             int res1 = 0;
             int res2 = 0;
             string[] lines = System.IO.File.ReadAllLines(@"../../../test.txt");
-            string[] bookNames = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\BookNames.txt");
-            string[] podcasts = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Подкасты.txt");
+            string[] bookNames = System.IO.File.ReadAllLines(@"../../../BookNames.txt");
+            string[] podcasts = System.IO.File.ReadAllLines(@"../../../Подкасты.txt");
             var botClient = new TelegramBotClient("6073096280:AAGjLrQdWF0j3phbnOMIip0g_8aYSVu_Vf0");
 
             var me = botClient.GetMeAsync().Result;
@@ -335,7 +335,7 @@ namespace AwarenessTelegramBot
                     {
                         ResizeKeyboard = true
                     };
-                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Звуки и мысли.txt");
+                    string[] medLines = System.IO.File.ReadAllLines(@"../../../Звуки и мысли.txt");
                     for (int i = 0; i < medLines.Length; i++)
                     {
                         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -354,7 +354,7 @@ namespace AwarenessTelegramBot
                     {
                         ResizeKeyboard = true
                     };
-                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\«Дружественная медитация».txt");
+                    string[] medLines = System.IO.File.ReadAllLines(@"../../../«Дружественная медитация».txt");
                     for (int i = 0; i < medLines.Length; i++)
                     {
                         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -373,7 +373,7 @@ namespace AwarenessTelegramBot
                     {
                         ResizeKeyboard = true
                     };
-                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\«Осознанное движение».txt");
+                    string[] medLines = System.IO.File.ReadAllLines(@"../../../«Осознанное движение».txt");
                     for (int i = 0; i < medLines.Length; i++)
                     {
                         Message sentMessage = await botClient.SendTextMessageAsync(
