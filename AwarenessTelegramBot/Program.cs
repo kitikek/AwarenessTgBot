@@ -297,7 +297,7 @@ namespace AwarenessTelegramBot
                     {
                         ResizeKeyboard = true
                     };
-                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Медитация «Сканирование тела».txt");
+                    string[] medLines = System.IO.File.ReadAllLines(@"../../../Медитация «Сканирование тела».txt");
                     for (int i = 0; i < medLines.Length; i++)
                     {
                         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -316,7 +316,7 @@ namespace AwarenessTelegramBot
                     {
                         ResizeKeyboard = true
                     };
-                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\«Трехминутная медитация-передышка».txt");
+                    string[] medLines = System.IO.File.ReadAllLines(@"../../../«Трехминутная медитация-передышка».txt");
                     for (int i = 0; i < medLines.Length; i++)
                     {
                         Message sentMessage = await botClient.SendTextMessageAsync(

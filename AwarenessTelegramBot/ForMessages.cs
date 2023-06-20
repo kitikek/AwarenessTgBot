@@ -47,17 +47,17 @@ namespace AwarenessTelegramBot
         public static string GetInterpretation(string str)
         {
             if (str == "низкий😌")
-                return System.IO.File.ReadAllText(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\ResultUnder30.txt");
+                return System.IO.File.ReadAllText(@"../../../ResultUnder30.txt");
             if (str == "умеренный😐")
-                return System.IO.File.ReadAllText(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\ResultUnder45.txt");
+                return System.IO.File.ReadAllText(@"../../../ResultUnder45.txt");
             if (str == "высокий😧")
-                return System.IO.File.ReadAllText(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\ResultOver45.txt");
+                return System.IO.File.ReadAllText(@"../../../ResultOver45.txt");
             else
                 return "Вам стоит пройти тест снова, интерпретации для такого уровня тревожности нет.";
         }
         public static string GetRandomQuote()
         {
-            string[] quotes = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Цитаты.txt");
+            string[] quotes = System.IO.File.ReadAllLines(@"../../../Цитаты.txt");
             Random rnd = new Random();
             int i = rnd.Next(quotes.Length);
             return quotes[i];
