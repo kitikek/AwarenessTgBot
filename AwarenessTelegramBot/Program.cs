@@ -20,7 +20,11 @@ namespace AwarenessTelegramBot
         {
             int[] result = new int[41];
             int i = 0;
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\test.txt");
+            int res1 = 0;
+            int res2 = 0;
+            string[] lines = System.IO.File.ReadAllLines(@"./test.txt");
+            string[] bookNames = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\BookNames.txt");
+            string[] podcasts = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Подкасты.txt");
             var botClient = new TelegramBotClient("6073096280:AAGjLrQdWF0j3phbnOMIip0g_8aYSVu_Vf0");
 
             var me = botClient.GetMeAsync().Result;
@@ -38,41 +42,6 @@ namespace AwarenessTelegramBot
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
 
-            static (int, int) GetResult(int[] array)
-            {
-                int[] straightQuestions = new int[] { 3, 4, 6, 7, 9, 12, 13, 14, 17, 18 };
-                int[] reverseQuestions = new int[] { 1, 2, 5, 8, 10, 11, 15, 16, 19, 20 };
-
-                int[] straightPersQuestions = new int[] { 22, 23, 24, 25, 28, 29, 31, 32, 34, 35, 37, 38, 40 };
-                int[] reversePersQuestions = new int[] { 21, 26, 27, 30, 33, 36, 39};
-
-                for (int i = 0; i < array.Length; i++)
-                {
-                    if (straightQuestions.Contains(i))
-                        straightQuestions[straightQuestions.ToList().IndexOf(i)] = array[i];
-                    if (reverseQuestions.Contains(i))
-                        reverseQuestions[reverseQuestions.ToList().IndexOf(i)] = array[i];
-                    if (straightPersQuestions.Contains(i))
-                        straightPersQuestions[straightPersQuestions.ToList().IndexOf(i)] = array[i];
-                    if (reversePersQuestions.Contains(i))
-                        reversePersQuestions[reversePersQuestions.ToList().IndexOf(i)] = array[i];
-                }
-                int reactAnx = straightQuestions.Sum() - reverseQuestions.Sum() +50;
-                int persAnx = straightPersQuestions.Sum() - reversePersQuestions.Sum() + 35;
-                return (reactAnx , persAnx);
-            }
-            static string IdentifyResult(int res)
-            {
-                if (res < 30 && res >= 20)
-                    return "низкий😌";
-                if (res < 45 && res >= 30)
-                    return "умеренный😐";
-                if (res >= 45 && res <= 80)
-                    return "высокий😧";
-                else
-                    return "не достоверный, стоит пройти тест еще раз";
-            }
-
             async Task HandleUpdateAsync(ITelegramBotClient botClient, Update receivedUpdate, CancellationToken cancellationToken)
             {
                 if (receivedUpdate.Message is not { } message)
@@ -88,9 +57,9 @@ namespace AwarenessTelegramBot
                     };
                     var chatId = message.Chat.Id;
 
-                    Console.WriteLine($"Message \"/start\" from {chatId}, User - {message.Chat.Username}");
+                    Console.WriteLine($"Message - /start from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
                     Message sentMessage = await botClient.SendTextMessageAsync(
-                        chatId, "Привет! Мы создали бота \"Мы вместе\", который помогает справиться с тревожностью и стрессом 🆘" +
+                        chatId, $"Привет, {message.Chat.FirstName + " " + message.Chat.LastName}!\nМы создали бота \"Мы вместе\", который помогает справиться с тревожностью и стрессом 🆘" +
                         "\nПройди тест на уровень тревожности и получи доступ к медитациям, дыхательным практикам, подкастам, книгам, музыке и цитатам 🧘‍♀️" +
                         "\nНаш бот - это твой надежный друг и помощник" +
                         "\nНачни прямо сейчас, нажми кнопку \"Начать тест\" и найди внутреннюю гармонию 💗",
@@ -101,15 +70,15 @@ namespace AwarenessTelegramBot
                 if (message.Text is "Начать тест")
                 {
                     var chatId = message.Chat.Id;
-                    Console.WriteLine($"Message \"Начать тест\" from {chatId},User - {message.Chat.Username}");
+                    Console.WriteLine($"Message - Начать тест from {chatId},User - {message.Chat.FirstName + " " + message.Chat.LastName}");
 
                     Message sentMessage = await botClient.SendTextMessageAsync(
                                 chatId,
                                 "Проходите тест осознанно, не спешите, прислушайтесь к себе.");
-                    Message sendStiker = await botClient.SendStickerAsync(
-                        chatId,
-                        sticker: InputFile.FromUri("https://cdn.tlgrm.app/stickers/a13/772/a1377248-ef80-44a5-88a4-6d89aa2ebad2/192/10.webp"),
-                        cancellationToken: cancellationToken);
+                    //Message sendStiker = await botClient.SendStickerAsync(
+                    //    chatId,
+                    //    sticker: InputFile.FromUri("https://cdn.tlgrm.app/stickers/a13/772/a1377248-ef80-44a5-88a4-6d89aa2ebad2/192/10.webp"),
+                    //    cancellationToken: cancellationToken);
                     message.Text = "Перейти к тесту";
                     Array.Clear(result);
                     i = 0;
@@ -118,34 +87,48 @@ namespace AwarenessTelegramBot
                     || message.Text is "Почти никогда" || message.Text is "Иногда" || message.Text is "Часто" || message.Text is "Почти всегда")
                 {
                     var chatId = message.Chat.Id;
-
                     
-                    Console.WriteLine($"Message - {message.Text} from {chatId}, User - {message.Chat.Username}");
+                    Console.WriteLine($"Message - {message.Text} from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
 
                     if (i < 40)
                     {
                         if (i < 20)
                         {
                             string line = lines[i];
-                            ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Нет, это не так", "Пожалуй, так", "Верно", "Совершенно верно" }, })
+                            ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Нет, это не так", "Пожалуй, так" },
+                                                                                    new KeyboardButton[]{"Верно", "Совершенно верно"}})
                             {
                                 ResizeKeyboard = true
                             };
+                            if (i == 0)
+                            {
+                                Message sentMessageIn = await botClient.SendTextMessageAsync(
+                                    chatId,
+                                    "Первый тест на определение ситуативной тревожности👇",
+                                    replyMarkup: replyKeyboardMarkup);
+                                i++;
+                            }
                             Message sentMessage = await botClient.SendTextMessageAsync(
                                 chatId,
                                 line.ToString(),
                                 replyMarkup: replyKeyboardMarkup);
                             receivedUpdate = new Update();
-                            if (i == 0)
-                                i++;
                         }
                         else
-                        {
+                        {                            
                             string line = lines[i];
-                            ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Почти никогда", "Иногда", "Часто", "Почти всегда" }, })
+                            ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Почти никогда", "Иногда" },
+                                                                                    new KeyboardButton[]{"Часто", "Почти всегда"} })
                             {
                                 ResizeKeyboard = true
                             };
+                            if (i == 20)
+                            {
+                                Message sentMessageIn = await botClient.SendTextMessageAsync(
+                                    chatId,
+                                    "Второй тест на определение личностной тревожности👇",
+                                    replyMarkup: replyKeyboardMarkup);
+                            }
                             Message sentMessage = await botClient.SendTextMessageAsync(
                                 chatId,
                                 line.ToString(),
@@ -163,7 +146,15 @@ namespace AwarenessTelegramBot
                             };
                             Message sentMessage = await botClient.SendTextMessageAsync(
                                 chatId,
-                                "Давайте узнаем результат 🤔",
+                                "Ура! Оба теста пройдены, в качестве ннаграды для вас - цитата, надеюсь, она натолкнет вас на правильные мысли🎉",
+                                replyMarkup: replyKeyboardMarkup);
+                            sentMessage = await botClient.SendTextMessageAsync(
+                                chatId,
+                                ForMessages.GetRandomQuote(),
+                                replyMarkup: replyKeyboardMarkup);
+                            sentMessage = await botClient.SendTextMessageAsync(
+                                chatId,
+                                "А теперь, давайте узнаем результат 🤔",
                                 replyMarkup: replyKeyboardMarkup);
                         }
                         receivedUpdate = new Update();
@@ -194,7 +185,7 @@ namespace AwarenessTelegramBot
                 {
                     var chatId = message.Chat.Id;
 
-                    Console.WriteLine($"Message \"/help\" from {chatId}, User - {message.Chat.Username}");
+                    Console.WriteLine($"Message \"/help\" from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
                     Message sentMessage = await botClient.SendTextMessageAsync(
                         chatId, "* Список команд"
                         );
@@ -203,17 +194,538 @@ namespace AwarenessTelegramBot
                 {
                     var chatId = message.Chat.Id;
 
-                    int res1 = GetResult(result).Item1;
-                    int res2 = GetResult(result).Item2;
+                    res1 = ForMessages.GetResult(result).Item1;
+                    res2 = ForMessages.GetResult(result).Item2;
 
-                    string mes = $"Результаты:\nУровень вашей ситуативной тревожности - {IdentifyResult(res1)} ({res1} баллов)" +
-                        $"\nУровень вашей личностной тревожности - {IdentifyResult(res2)} ({res2} баллов)";
+                    string mes = $"Результаты:\nУровень вашей ситуативной тревожности - {ForMessages.IdentifyResult(res1)} ({res1} баллов)" +
+                        $"\nУровень вашей личностной тревожности - {ForMessages.IdentifyResult(res2)} ({res2} баллов)";
 
-                    Console.WriteLine($"Message Узнать результат from {chatId}, User - {message.Chat.Username}");
+                    Console.WriteLine($"Message - Узнать результат from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
                     Message sentMessage = await botClient.SendTextMessageAsync(
                             chatId,
                             mes);
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Получить интерпретацию", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    sentMessage = await botClient.SendTextMessageAsync(
+                            chatId,
+                            "Вы можете получить более полное описание уровней тревожности, либо перейти непосредственно к материалам",
+                            replyMarkup: replyKeyboardMarkup);
                     receivedUpdate = new Update();
+                }
+                if (message.Text is "Получить интерпретацию")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Получить интерпретацию from {chatId}, User - {message.Chat.Username}");
+
+                    string mes1 = ForMessages.GetInterpretation(ForMessages.IdentifyResult(res1));
+                    string mes2 = ForMessages.GetInterpretation(ForMessages.IdentifyResult(res2));
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+
+                    if (mes1 == mes2)
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                                    chatId,
+                                    "Интерпретация для вашего уровня тревожностей👇");
+                        sentMessage = await botClient.SendTextMessageAsync(
+                                chatId,
+                                mes1,
+                                replyMarkup: replyKeyboardMarkup);
+                    }
+                    else
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                                    chatId,
+                                    "Интерпретация для вашего уровня ситуативной тревожности👇");
+                        sentMessage = await botClient.SendTextMessageAsync(
+                                chatId,
+                                mes1,
+                                replyMarkup: replyKeyboardMarkup);
+                        sentMessage = await botClient.SendTextMessageAsync(
+                                    chatId,
+                                    "Интерпретация для вашего уровня личностной тревожности👇");
+                        sentMessage = await botClient.SendTextMessageAsync(
+                                chatId,
+                                mes2,
+                                replyMarkup: replyKeyboardMarkup);
+                    }
+                }
+                if (message.Text is "Перейти к подборкам")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Перейти к подборкам from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Медитации", "Книги" },
+                                                                            new KeyboardButton[]{"Подкасты"} })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        "Подборки",
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Медитации")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Медитации from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "«Сканирование тела»" }, new KeyboardButton[]{"«Трехминутная медитация-передышка»"}, 
+                        new KeyboardButton[] { "«Звуки и мысли»" }, new KeyboardButton[] { "«Дружественная медитация»" }, new KeyboardButton[]{ "«Осознанное движение»" } } )
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        "Выбирайте понравившуюся и начинайте медитировать",
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«Сканирование тела»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Сканирование тела» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Медитации", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Медитация «Сканирование тела».txt");
+                    for (int i = 0; i < medLines.Length; i++)
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                            chatId,
+                            medLines[i],
+                            replyMarkup: replyKeyboardMarkup);
+                    }
+                }
+                if (message.Text is "«Трехминутная медитация-передышка»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Трехминутная медитация-передышка» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Медитации", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\«Трехминутная медитация-передышка».txt");
+                    for (int i = 0; i < medLines.Length; i++)
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                            chatId,
+                            medLines[i],
+                            replyMarkup: replyKeyboardMarkup);
+                    }
+                }
+                if (message.Text is "«Звуки и мысли»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Звуки и мысли» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Медитации", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Звуки и мысли.txt");
+                    for (int i = 0; i < medLines.Length; i++)
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                            chatId,
+                            medLines[i],
+                            replyMarkup: replyKeyboardMarkup);
+                    }
+                }
+                if (message.Text is "«Дружественная медитация»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Дружественная медитация» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Медитации", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\«Дружественная медитация».txt");
+                    for (int i = 0; i < medLines.Length; i++)
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                            chatId,
+                            medLines[i],
+                            replyMarkup: replyKeyboardMarkup);
+                    }
+                }
+                if (message.Text is "«Осознанное движение»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Осознанное движение» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Медитации", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    string[] medLines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\«Осознанное движение».txt");
+                    for (int i = 0; i < medLines.Length; i++)
+                    {
+                        Message sentMessage = await botClient.SendTextMessageAsync(
+                            chatId,
+                            medLines[i],
+                            replyMarkup: replyKeyboardMarkup);
+                    }
+                }
+                if (message.Text is "Книги")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книги from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Век тревожности. Страхи, надежды, неврозы и поиски душевного покоя, Скотт Стоссел" },
+                        new KeyboardButton[]{"Внутреннее спокойствие. 101 способ справиться с тревогой, страхом и паническими атаками, Таня Петерсон"},
+                        new KeyboardButton[] { "Управление тревогой. Системный подход к борьбе с беспокойством на работе и в отношениях, Катлин Смит" },
+                        new KeyboardButton[] { "Тревожность. 10 шагов, которые помогут избавиться от  беспокойства, Эдмунд Борн, Лорна Гарано" },
+                        new KeyboardButton[]{ "Терапия беспокойства. Как справляться со страхами, тревогами и паническими атаками без лекарств, Дэвид Бернс" },
+                        new KeyboardButton[] { "Тревожный мозг. Как успокоить мысли, исцелить разум и вернуть контроль над собственной жизнью, Джозеф А. Аннибали" },
+                        new KeyboardButton[] { "Свобода от тревоги. Справься с тревогой, пока она не расправилась с тобой, Роберт Лихи" },
+                        new KeyboardButton[]{ "Беспокойный человек. Как снизить тревожность и меньше волноваться, Стюарт Геддес" },
+                        new KeyboardButton[] { "Я с тобой. 149 простых советов как справиться с тревогой, беспокойством и паникой, Гед Дженкинс-Омар" },
+                        new KeyboardButton[]{ "Будь спок. Проверенные техники управления тревогой, Джилл Уэбер" }})
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        "Вам представлены названия, чтобы узнать о книге больше выберите одно из них",
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Век тревожности. Страхи, надежды, неврозы и поиски душевного покоя, Скотт Стоссел")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 1 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv4.litres.ru/pub/c/cover_max1500/19235942.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[0],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Внутреннее спокойствие. 101 способ справиться с тревогой, страхом и паническими атаками, Таня Петерсон")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 2 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv9.litres.ru/pub/c/cover_max1500/63910791.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[1],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Управление тревогой. Системный подход к борьбе с беспокойством на работе и в отношениях, Катлин Смит")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 3 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv2.litres.ru/pub/c/cover_max1500/64503026.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[2],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Тревожность. 10 шагов, которые помогут избавиться от  беспокойства, Эдмунд Борн, Лорна Гарано")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 4 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv2.litres.ru/pub/c/cover_200/65909322.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[3],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Терапия беспокойства. Как справляться со страхами, тревогами и паническими атаками без лекарств, Дэвид Бернс")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 5 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv5.litres.ru/pub/c/cover_max1500/64476057.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[4],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Тревожный мозг. Как успокоить мысли, исцелить разум и вернуть контроль над собственной жизнью, Джозеф А. Аннибали")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 6 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cdn.eksmo.ru/v2/ITD000000000843865/COVER/cover1__w600.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[5],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Свобода от тревоги. Справься с тревогой, пока она не расправилась с тобой, Роберт Лихи")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 7 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cdn.img-gorod.ru/310x500/nomenclature/26/041/2604153.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[6],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Беспокойный человек. Как снизить тревожность и меньше волноваться, Стюарт Геддес")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 8 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv2.litres.ru/pub/c/cover_max1500/55746525.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[7],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Я с тобой. 149 простых советов как справиться с тревогой, беспокойством и паникой, Гед Дженкинс-Омар")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 9 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://cv1.litres.ru/pub/c/cover_max1500/67365210.jpg"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[8],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Будь спок. Проверенные техники управления тревогой, Джилл Уэбер")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Книга 10 from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Книги", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendPhotoAsync(
+                        chatId,
+                        photo: InputFile.FromUri("https://img4.labirint.ru/rc/95d3ca8a9b72e57b15f794bad7cce68a/363x561q80/books85/844154/cover.jpg?1653330452"),
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        bookNames[9],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "Подкасты")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - Подкасты from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "«НОРМ»" }, new KeyboardButton[]{"«Среда для медитаций»"},
+                        new KeyboardButton[] { "«Ты — это важно»" }, new KeyboardButton[] { "«Куда бежишь?»" }, new KeyboardButton[]{ "«Эмоциональный интеллигент»" },
+                    new KeyboardButton[]{ "«Год, прожитый не спеша»" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        "Выбирайте понравившийся и начинайте слушать",
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«НОРМ»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «НОРМ» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Подкасты", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[0],
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[1],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«Среда для медитаций»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Среда для медитаций» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Подкасты", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[2],
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[3],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«Ты — это важно»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Ты — это важно» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Подкасты", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[4],
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[5],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«Куда бежишь?»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Куда бежишь?» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Подкасты", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[6],
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[7],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«Эмоциональный интеллигент»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Эмоциональный интеллигент» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Подкасты", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[8],
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[9],
+                        replyMarkup: replyKeyboardMarkup);
+                }
+                if (message.Text is "«Год, прожитый не спеша»")
+                {
+                    var chatId = message.Chat.Id;
+
+                    Console.WriteLine($"Message - «Год, прожитый не спеша» from {chatId}, User - {message.Chat.FirstName + " " + message.Chat.LastName}");
+
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[] { new KeyboardButton[] { "Подкасты", "Перейти к подборкам" } })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[10],
+                        replyMarkup: replyKeyboardMarkup);
+                    sentMessage = await botClient.SendTextMessageAsync(
+                        chatId,
+                        podcasts[11],
+                        replyMarkup: replyKeyboardMarkup);
                 }
             }
 
