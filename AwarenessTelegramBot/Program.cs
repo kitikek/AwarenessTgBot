@@ -22,9 +22,9 @@ namespace AwarenessTelegramBot
             int i = 0;
             int res1 = 0;
             int res2 = 0;
-            string[] lines = System.IO.File.ReadAllLines(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".."), "test.txt"));
-            string[] bookNames = System.IO.File.ReadAllLines(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".."), "BookNames.txt"));
-            string[] podcasts = System.IO.File.ReadAllLines(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".."), "Подкасты.txt"));
+            string[] lines = System.IO.File.ReadAllLines(@"../../../test.txt");
+            string[] bookNames = System.IO.File.ReadAllLines(@"../../../BookNames.txt");
+            string[] podcasts = System.IO.File.ReadAllLines(@"../../../Подкасты.txt");
             var botClient = new TelegramBotClient("6073096280:AAGjLrQdWF0j3phbnOMIip0g_8aYSVu_Vf0");
 
             var me = botClient.GetMeAsync().Result;
