@@ -22,7 +22,7 @@ namespace AwarenessTelegramBot
             int i = 0;
             int res1 = 0;
             int res2 = 0;
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\test.txt");
+            string[] lines = System.IO.File.ReadAllLines(@"../../../test.txt");
             string[] bookNames = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\BookNames.txt");
             string[] podcasts = System.IO.File.ReadAllLines(@"C:\Users\kitikek\source\repos\AwarenessTelegramBot\AwarenessTelegramBot\Подкасты.txt");
             var botClient = new TelegramBotClient("6073096280:AAGjLrQdWF0j3phbnOMIip0g_8aYSVu_Vf0");
